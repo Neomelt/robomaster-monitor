@@ -1,1 +1,3 @@
 config/param.toml
+logs/
+config/cookies.json

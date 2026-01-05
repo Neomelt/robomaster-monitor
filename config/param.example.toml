@@ -4,10 +4,13 @@ password = "xxxxxxxxxxx" # 修改为自己的 DJI 密码
 
 [feishu]
 webhook_url = "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # 修改为自己的飞书机器人 webhook api地址
+error_webhook_url = "" # (可选) 用于接收错误报警的飞书机器人 webhook api地址
 
 [browser]
+# 建议首次运行设置为 false，观察登录流程是否正常
 headless = true
 no_sandbox = true
 disable_gpu = true
 disable_dev_shm_usage = true
-user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
+# 使用较新的 User-Agent，模拟真实浏览器
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"

@@ -7,7 +7,6 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"path/filepath"
 	"robomaster-monitor/internal/storage"
 	"strings"
 	"time"
@@ -15,41 +14,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/network"
-	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
 )
-
-// captureScreenshot 保存当前页面截图用于调试
-func captureScreenshot(ctx context.Context, name string) {
-	var buf []byte
-	if err := chromedp.Run(ctx,
-		chromedp.ActionFunc(func(ctx context.Context) error {
-			var err error
-			buf, err = page.CaptureScreenshot().
-				WithFormat(page.CaptureScreenshotFormatPng).
-				WithFullPage(true).
-				Do(ctx)
-			return err
-		}),
-	); err != nil {
-		log.Printf("⚠️ 截图失败: %v", err)
-		return
-	}
-
-	// 保存到 logs 目录
-	screenshotDir := "logs"
-	if err := os.MkdirAll(screenshotDir, 0755); err != nil {
-		log.Printf("⚠️ 创建截图目录失败: %v", err)
-		return
-	}
-
-	filename := filepath.Join(screenshotDir, fmt.Sprintf("%s_%s.png", name, time.Now().Format("2006-01-02_15-04-05")))
-	if err := os.WriteFile(filename, buf, 0644); err != nil {
-		log.Printf("⚠️ 保存截图失败: %v", err)
-		return
-	}
-	log.Printf("📸 截图已保存: %s", filename)
-}
 
 const (
 	articleURL        = "https://bbs.robomaster.com/article"
@@ -252,7 +218,7 @@ func Login(ctx context.Context, username, password string) error {
 			chromedp.WaitVisible(loginButtonTop, chromedp.ByQuery),
 			randomDelay(300*time.Millisecond, 600*time.Millisecond),
 			chromedp.Click(loginButtonTop, chromedp.ByQuery),
-			randomDelay(1*time.Second, 2*time.Second),
+			randomDelay(2*time.Second, 3*time.Second), // 增加等待时间
 		)
 		if err != nil {
 			return fmt.Errorf("点击登录按钮失败: %w", err)
@@ -331,7 +297,6 @@ func Login(ctx context.Context, username, password string) error {
 			chromedp.WaitVisible(successSelector, chromedp.ByQuery),
 		)
 		if err != nil {
-			captureScreenshot(ctx, "login_failed")
 			return fmt.Errorf("登录验证失败: %w", err)
 		}
 	}

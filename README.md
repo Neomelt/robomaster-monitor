@@ -126,6 +126,30 @@ robomaster-monitor/
    ./monitor
    ```
 
+## 常见问题
+
+### 服务器登录失败（触发滑块验证码）
+
+**问题描述**：在云服务器上运行时，登录过程触发滑块验证码，导致登录超时失败。
+
+**原因**：云服务器 IP 被网站识别为可疑来源，自动触发了滑块验证，而程序无法自动完成验证。
+
+**解决方案**：从本地电脑登录后保存 Cookies，然后上传到服务器使用。
+
+```bash
+# 1. 在本地运行程序登录（确保 config/param.toml 中 headless = false）
+cd ~/robomaster-monitor && go run main.go
+# 登录成功后 Ctrl+C 停止
+
+# 2. 上传 cookies 到服务器
+scp ~/robomaster-monitor/config/cookies.json ubuntu@your-server-ip:~/robomaster-monitor/config/cookies.json
+
+# 3. 确保服务器配置中 headless = true，然后重启服务
+ssh ubuntu@your-server-ip "sudo systemctl restart rm-monitor"
+```
+
+> **注意**：Cookies 有有效期，过期后需要重复上述步骤。
+
 ## 部署建议
 
 鉴于目标网站的IP风控机制，将此监控脚本部署在个人云服务器（VPS）或长期在线的个人电脑上是目前最稳定可靠的方案。
